@@ -54,7 +54,7 @@ export default async function DashboardPage() {
               Assessment
             </CardTitle>
             <CardDescription>
-              Begin your relationship health assessment
+              Begin your personal growth assessment
             </CardDescription>
           </CardHeader>
           <CardContent>
