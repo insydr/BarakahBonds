@@ -101,11 +101,10 @@ export function PartnerStatus({ couple, partnerProfile }: PartnerStatusProps) {
         )}
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="w-full">
-              <Unlink className="size-4" />
-              Disconnect
-            </Button>
+          <DialogTrigger render={<Button variant="outline" className="w-full">
+            <Unlink className="size-4" />
+            Disconnect
+          </Button>}>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -137,8 +136,7 @@ export function PartnerStatus({ couple, partnerProfile }: PartnerStatusProps) {
             </div>
 
             <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
+              <DialogClose render={<Button variant="outline">Cancel</Button>}>
               </DialogClose>
               <Button
                 variant="destructive"

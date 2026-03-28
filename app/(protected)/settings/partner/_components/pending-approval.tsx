@@ -101,7 +101,7 @@ export function PendingApproval({
               disabled={isPending}
               className="flex-1"
             >
-              {isPending && optimisticState === 'approved' ? (
+              {isPending ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
                   Approving...
@@ -119,7 +119,7 @@ export function PendingApproval({
               disabled={isPending}
               className="flex-1"
             >
-              {isPending && optimisticState === 'rejected' ? (
+              {isPending ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
                   Rejecting...

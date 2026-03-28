@@ -35,7 +35,7 @@ export async function generateInvite(): Promise<CoupleActionResult> {
   // Check if user already has an active couple
   const { data: existingActive } = await supabase
     .from('couples')
-    .select('*')
+    .select('id, partner_1_id, partner_2_id, status')
     .or(`partner_1_id.eq.${user.id},partner_2_id.eq.${user.id}`)
     .eq('status', 'active')
     .maybeSingle()
@@ -45,13 +45,16 @@ export async function generateInvite(): Promise<CoupleActionResult> {
   }
 
   // Check for existing pending invitation (as partner_1)
-  const { data: existingPending } = await supabase
+  type PendingInvitation = Pick<Couple, 'id' | 'invitation_code' | 'invitation_expires_at' | 'status'>
+  const { data } = await supabase
     .from('couples')
-    .select('*')
+    .select('id, invitation_code, invitation_expires_at, status')
     .eq('partner_1_id', user.id)
     .eq('status', 'pending')
     .gt('invitation_expires_at', new Date().toISOString())
     .maybeSingle()
+  
+  const existingPending = data as PendingInvitation | null
 
   if (existingPending) {
     // Return existing code instead of creating new one
@@ -101,13 +104,16 @@ export async function acceptInvite(code: string): Promise<CoupleActionResult> {
   }
 
   // Find pending invitation with matching code
-  const { data: couple, error: findError } = await supabase
+  type InvitationData = Pick<Couple, 'id' | 'partner_1_id' | 'partner_2_id' | 'invitation_code' | 'invitation_expires_at' | 'status'>
+  const { data, error: findError } = await supabase
     .from('couples')
-    .select('*')
+    .select('id, partner_1_id, partner_2_id, invitation_code, invitation_expires_at, status')
     .eq('invitation_code', code.toUpperCase())
     .eq('status', 'pending')
     .gt('invitation_expires_at', new Date().toISOString())
     .maybeSingle()
+  
+  const couple = data as InvitationData | null
 
   if (findError) {
     console.error('Error finding invitation:', findError)
@@ -131,7 +137,7 @@ export async function acceptInvite(code: string): Promise<CoupleActionResult> {
   // Check if user is already linked elsewhere
   const { data: existingLink } = await supabase
     .from('couples')
-    .select('*')
+    .select('id, status')
     .or(`partner_1_id.eq.${user.id},partner_2_id.eq.${user.id}`)
     .eq('status', 'active')
     .maybeSingle()
@@ -174,12 +180,15 @@ export async function approveLink(coupleId: string): Promise<CoupleActionResult>
   }
 
   // Verify user is partner_1 (only initiator can approve)
-  const { data: couple, error: findError } = await supabase
+  type CoupleData = Pick<Couple, 'id' | 'status' | 'partner_1_id' | 'partner_2_id'>
+  const { data, error: findError } = await supabase
     .from('couples')
-    .select('*')
+    .select('id, status, partner_1_id, partner_2_id')
     .eq('id', coupleId)
     .eq('partner_1_id', user.id)
     .maybeSingle()
+  
+  const couple = data as CoupleData | null
 
   if (findError) {
     console.error('Error finding couple:', findError)
@@ -231,7 +240,7 @@ export async function rejectLink(coupleId: string): Promise<CoupleActionResult> 
   // Verify user is partner_1 (only initiator can reject)
   const { data: couple, error: findError } = await supabase
     .from('couples')
-    .select('*')
+    .select('id')
     .eq('id', coupleId)
     .eq('partner_1_id', user.id)
     .maybeSingle()
@@ -273,12 +282,15 @@ export async function disconnectPartner(): Promise<CoupleActionResult> {
   }
 
   // Find active couple record
-  const { data: couple, error: findError } = await supabase
+  type CoupleData = Pick<Couple, 'id' | 'status'>
+  const { data, error: findError } = await supabase
     .from('couples')
-    .select('*')
+    .select('id, status')
     .or(`partner_1_id.eq.${user.id},partner_2_id.eq.${user.id}`)
     .eq('status', 'active')
     .maybeSingle()
+  
+  const couple = data as CoupleData | null
 
   if (findError) {
     console.error('Error finding couple:', findError)

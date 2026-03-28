@@ -26,7 +26,7 @@ export default async function PartnerSettingsPage() {
   // Fetch couple record where user is partner_1 or partner_2
   const { data: couple } = await supabase
     .from('couples')
-    .select('*')
+    .select('id, partner_1_id, partner_2_id, invitation_code, invitation_expires_at, status, created_at, updated_at')
     .or(`partner_1_id.eq.${user.id},partner_2_id.eq.${user.id}`)
     .in('status', ['pending', 'active'])
     .order('created_at', { ascending: false })
@@ -47,7 +47,7 @@ export default async function PartnerSettingsPage() {
     if (partnerId) {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, display_name, avatar_url, timezone, privacy_settings, created_at, updated_at')
         .eq('id', partnerId)
         .single()
 

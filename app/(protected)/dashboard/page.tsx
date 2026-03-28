@@ -15,18 +15,22 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
+  if (!user) {
+    return null
+  }
+
   // Get user profile
   const { data: profile } = await supabase
     .from('profiles')
     .select('display_name')
-    .eq('id', user?.id)
+    .eq('id', user.id)
     .single()
 
   // Check for partner/couple status
   const { data: couple } = await supabase
     .from('couples')
     .select('id, status')
-    .or(`partner_1_id.eq.${user?.id},partner_2_id.eq.${user?.id}`)
+    .or(`partner_1_id.eq.${user.id},partner_2_id.eq.${user.id}`)
     .eq('status', 'active')
     .single()
 

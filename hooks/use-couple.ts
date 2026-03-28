@@ -37,13 +37,14 @@ export function useCoupleStatus(): UseCoupleStatusReturn {
       return
     }
 
+    type CoupleData = Pick<Couple, 'id' | 'partner_1_id' | 'partner_2_id' | 'status' | 'invitation_code' | 'invitation_expires_at' | 'created_at'>
     const { data, error: fetchError } = await supabase
       .from('couples')
-      .select('*')
+      .select('id, partner_1_id, partner_2_id, status, invitation_code, invitation_expires_at, created_at')
       .or(`partner_1_id.eq.${user.id},partner_2_id.eq.${user.id}`)
       .order('created_at', { ascending: false })
       .limit(1)
-      .maybeSingle()
+      .maybeSingle() as { data: CoupleData | null; error: PostgrestError | null }
 
     if (fetchError) {
       setError(fetchError)
@@ -51,7 +52,7 @@ export function useCoupleStatus(): UseCoupleStatusReturn {
       return
     }
 
-    setCouple(data)
+    setCouple(data as Couple | null)
     setLoading(false)
   }, [])
 

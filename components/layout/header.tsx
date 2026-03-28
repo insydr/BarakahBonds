@@ -42,11 +42,10 @@ export function Header({ user }: HeaderProps) {
         </div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="default" className="gap-2">
-              <User className="size-4" />
-              <span className="hidden sm:inline">{user.display_name}</span>
-            </Button>
+          <DropdownMenuTrigger render={<Button variant="ghost" size="default" className="gap-2">
+            <User className="size-4" />
+            <span className="hidden sm:inline">{user.display_name}</span>
+          </Button>}>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="font-normal">
@@ -56,11 +55,9 @@ export function Header({ user }: HeaderProps) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/settings/account">
-                <Settings className="mr-2 size-4" />
-                Account Settings
-              </Link>
+            <DropdownMenuItem render={<Link href="/settings/account" />}>
+              <Settings className="mr-2 size-4" />
+              Account Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
